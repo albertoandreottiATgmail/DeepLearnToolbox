@@ -20,11 +20,16 @@ cnn.layers = {
     struct('type', 'c', 'outputmaps', 12, 'kernelsize', 5) %convolution layer
     struct('type', 's', 'scale', 2) %subsampling layer
 };
-cnn = cnnsetup(cnn, train_x, train_y);
+
 
 opts.alpha = 1;
 opts.batchsize = 50;
 opts.numepochs = 1;
+
+cnn = cnnsetup(cnn, train_x, train_y);
+cnn = cnnff(cnn, batch_x);
+cnn = cnnbp(cnn, batch_y);
+cnn = cnnapplygrads(cnn, opts);
 
 cnn = cnntrain(cnn, train_x, train_y, opts);
 

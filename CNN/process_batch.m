@@ -1,6 +1,8 @@
 %l is the batch number
 function process_batch(x, y, kk, global_net, turn, start, numbatches,  pid, numWorkers, opts)
-    
+	net.p = 0;
+	net.rL = [];
+	inited = 0;
 	
 	net.layers = {
     struct('type', 'i') %input layer
@@ -9,17 +11,19 @@ function process_batch(x, y, kk, global_net, turn, start, numbatches,  pid, numW
     struct('type', 'c', 'outputmaps', 12, 'kernelsize', 5) %convolution layer
     struct('type', 's', 'scale', 2) %subsampling layer
     };
-	net.rL = [];
-	%net = cnncopy(net, global_net);
 	
 	for l = start + 1 : start + numbatches - 3
 	    %batch_x = x(:, :, kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize));
         %batch_y = y(:,    kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize));
 
-        net = cnnsetup(net, x, y);
 		net = cnnff(net, x(:, :, kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize)));
         net = cnnbp(net, y(:,    kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize)));
         net = cnnapplygrads(net, opts);
+		
+		if inited == 0 
+		   net = cnncopy(net, global_net);
+		   inited = 1;
+		end
        
 	    if isempty(net.rL)
            net.rL(1) = net.L;

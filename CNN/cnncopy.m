@@ -1,4 +1,7 @@
 function cpnet = cnncopy(cpnet, net)
+
+
+
     for l = 2 : numel(net.layers)
         if strcmp(net.layers{l}.type, 'c')
             for j = 1 : numel(net.layers{l}.a)

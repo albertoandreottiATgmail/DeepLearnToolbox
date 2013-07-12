@@ -6,13 +6,6 @@ function net = cnntrain(net, x, y, opts)
         error('numbatches not integer');
     end
 
-
-		function retcode = eh(err)
-           a = err
-           retcode = zeros(26,1).+255;	
-        end
-
-
     net.rL = [];
     for i = 1 : opts.numepochs
         disp(['epoch ' num2str(i) '/' num2str(opts.numepochs)]);
@@ -26,7 +19,6 @@ function net = cnntrain(net, x, y, opts)
 		%process starts
 		turn = 0;
 
-		
         pararrayfun(numWorkers,
                     @(starts, pids)process_batch(x, y, kk, net, turn, starts, (numbatches/numWorkers),  pids, numWorkers, opts),
                     starts,
