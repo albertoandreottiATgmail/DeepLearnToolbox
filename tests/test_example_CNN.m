@@ -23,19 +23,15 @@ cnn.layers = {
 
 
 opts.alpha = 1;
-opts.batchsize = 50;
+opts.batchsize = 250;
 opts.numepochs = 1;
 
 cnn = cnnsetup(cnn, train_x, train_y);
-cnn = cnnff(cnn, batch_x);
-cnn = cnnbp(cnn, batch_y);
-cnn = cnnapplygrads(cnn, opts);
-
 cnn = cnntrain(cnn, train_x, train_y, opts);
 
 [er, bad] = cnntest(cnn, test_x, test_y);
-
+er
 %plot mean squared error
-figure; plot(cnn.rL);
-
+%figure; plot(cnn.rL);
+er
 assert(er<0.12, 'Too big error');
