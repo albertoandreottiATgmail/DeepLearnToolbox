@@ -11,11 +11,11 @@ function process_batch(x, y, kk, global_net, turn, start, numbatches,  pid, numW
     struct('type', 'c', 'outputmaps', 12, 'kernelsize', 5) %convolution layer
     struct('type', 's', 'scale', 2) %subsampling layer
     };
-	
+	net = cnnsetup(net, x, y);
 	for l = start + 1 : start + numbatches - 3
 	    %batch_x = x(:, :, kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize));
         %batch_y = y(:,    kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize));
-
+        
 		net = cnnff(net, x(:, :, kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize)));
         net = cnnbp(net, y(:,    kk((l - 1) * opts.batchsize + 1 : l * opts.batchsize)));
         net = cnnapplygrads(net, opts);
