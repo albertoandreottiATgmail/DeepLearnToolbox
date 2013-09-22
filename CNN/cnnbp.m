@@ -23,7 +23,9 @@ function net = cnnbp(net, y)
     for l = (n - 1) : -1 : 1
         if strcmp(net.layers{l}.type, 'c')
             for j = 1 : numel(net.layers{l}.a)
-                net.layers{l}.d{j} = net.layers{l}.a{j} .* (1 - net.layers{l}.a{j}) .* (expand(net.layers{l + 1}.d{j}, [net.layers{l + 1}.scale net.layers{l + 1}.scale 1]) / net.layers{l + 1}.scale ^ 2);
+				xscale = net.layers{l + 1}.xscale;
+				yscale = net.layers{l + 1}.yscale;
+				net.layers{l}.d{j} = net.layers{l}.a{j} .* (1 - net.layers{l}.a{j}) .* (expand(net.layers{l + 1}.d{j}, [xscale yscale 1]) / xscale*yscale);
             end
         elseif strcmp(net.layers{l}.type, 's')
             for i = 1 : numel(net.layers{l}.a)
@@ -41,7 +43,7 @@ function net = cnnbp(net, y)
         if strcmp(net.layers{l}.type, 'c')
             for j = 1 : numel(net.layers{l}.a)
                 for i = 1 : numel(net.layers{l - 1}.a)
-                    net.layers{l}.dk{i}{j} = custom_convn(flipall(net.layers{l - 1}.a{i}), net.layers{l}.d{j}, 'valid') / size(net.layers{l}.d{j}, 3);
+                    net.layers{l}.dk{i}{j} = custom_convn(flipall(net.layers{l - 1}.a{i}), net.layers{l}.d{j}, 'fft') / size(net.layers{l}.d{j}, 3);
                 end
                 net.layers{l}.db{j} = sum(net.layers{l}.d{j}(:)) / size(net.layers{l}.d{j}, 3);
             end

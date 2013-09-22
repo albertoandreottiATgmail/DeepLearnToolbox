@@ -53,6 +53,8 @@ function retcode = eh(error)
     retcode = zeros(26,1).+255;	
 end
 
+%endpoints = [en_endpoint de_endpoint it_endpoint];
+%filenames = ["en" "de" "it"];
 
 mfccs = pararrayfun(numWorkers = 30,
                     @(anfang, ende, id)fetch_data(flist, endpoint, anfang, ende, id), %currying with anonym funct

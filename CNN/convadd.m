@@ -1,4 +1,4 @@
-	%a is the image, k the kernel, o the output, i is the index.
+%a is the image, k the kernel, o the output, i is the index.
 function result = convadd(a, k, m, pid, chunkSize)
 	init = pid*chunkSize + 1;
 	result = zeros(m, m);
