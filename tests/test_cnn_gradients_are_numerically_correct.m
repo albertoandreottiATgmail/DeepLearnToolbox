@@ -1,6 +1,12 @@
 function test_cnn_gradients_are_numerically_correct
 batch_x = rand(28,28,5);
-batch_y = rand(10,5);
+batch_y = zeros(10, 5);
+
+[a b] = max(rand(10,5));
+for i=1:size(a,2)
+    batch_y(b(i), i) = 1;
+end
+
 cnn.layers = {
     struct('type', 'i') %input layer
     struct('type', 'c', 'outputmaps', 2, 'kernelsize', 5) %convolution layer
