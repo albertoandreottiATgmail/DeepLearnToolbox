@@ -4,19 +4,21 @@ function net = cnnsetup(net, x, y)
 
     for l = 1 : numel(net.layers)   %  layer
         if strcmp(net.layers{l}.type, 's')
-		    mapsize = [mapsize(1)/net.layers{l}.xscale, mapsize(2)/net.layers{l}.yscale]
+            mapsize = [mapsize(1)/net.layers{l}.xscale, mapsize(2)/net.layers{l}.yscale];
             assert(all(floor(mapsize)==mapsize), ['Layer ' num2str(l) ' size must be integer. Actual: ' num2str(mapsize)]);
             for j = 1 : inputmaps
                 net.layers{l}.b{j} = 0;
             end
         end
         if strcmp(net.layers{l}.type, 'c')
-            mapsize = mapsize - net.layers{l}.kernelsize + 1
+            mapsize = mapsize - net.layers{l}.kernelsize + 1;
+            mapsize
             fan_out = net.layers{l}.outputmaps * net.layers{l}.kernelsize ^ 2;
             for j = 1 : net.layers{l}.outputmaps  %  output map
                 fan_in = inputmaps * net.layers{l}.kernelsize ^ 2;
+                denom = (net.layers{l}.kernelsize ^ 2)*inputmaps*2;
                 for i = 1 : inputmaps  %  input map
-                    net.layers{l}.k{i}{j} = (rand(net.layers{l}.kernelsize) - 0.5) * 2 * sqrt(6 / (fan_in + fan_out));
+                    net.layers{l}.k{i}{j} = (rand(net.layers{l}.kernelsize)) * (1/(denom));%* 0.2 *sqrt(6 / (fan_in + fan_out));
                 end
                 net.layers{l}.b{j} = 0;
             end
@@ -31,5 +33,5 @@ function net = cnnsetup(net, x, y)
     onum = size(y, 1);
 
     net.ffb = zeros(onum, 1);
-    net.ffW = (rand(onum, fvnum) - 0.5) * 2 * sqrt(6 / (onum + fvnum));
+    net.ffW = (rand(onum, fvnum) ) * 2 * sqrt(6 / (onum + fvnum));
 end

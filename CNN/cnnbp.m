@@ -4,12 +4,13 @@ function net = cnnbp(net, y)
     %  error
     net.e = net.o - y;
     %  loss function
-    net.L = 1/2* sum(net.e(:) .^ 2) / size(net.e, 2);
+    net.L = -sum(sum(log(net.o).*y))/ size(net.e, 2);
+    cost = net.L
 
     %%  backprop deltas
-    net.od = net.e .* (net.o .* (1 - net.o));   %  output delta
+    net.od = net.e;                             %  output delta
     net.fvd = (net.ffW' * net.od);              %  feature vector delta
-    if strcmp(net.layers{n}.type, 'c')         %  only conv layers has sigm function
+    if strcmp(net.layers{n}.type, 'c')          %  only conv layers has sigm function
         net.fvd = net.fvd .* (net.fv .* (1 - net.fv));
     end
 
@@ -23,9 +24,9 @@ function net = cnnbp(net, y)
     for l = (n - 1) : -1 : 1
         if strcmp(net.layers{l}.type, 'c')
             for j = 1 : numel(net.layers{l}.a)
-				xscale = net.layers{l + 1}.xscale;
-				yscale = net.layers{l + 1}.yscale;
-				net.layers{l}.d{j} = net.layers{l}.a{j} .* (1 - net.layers{l}.a{j}) .* (expand(net.layers{l + 1}.d{j}, [xscale yscale 1]) / xscale*yscale);
+                xscale = net.layers{l + 1}.xscale;
+                yscale = net.layers{l + 1}.yscale;
+                net.layers{l}.d{j} = net.layers{l}.a{j} .* (1 - net.layers{l}.a{j}) .* (expand(net.layers{l + 1}.d{j}, [xscale yscale 1]) / (xscale*yscale));
             end
         elseif strcmp(net.layers{l}.type, 's')
             for i = 1 : numel(net.layers{l}.a)
@@ -43,11 +44,11 @@ function net = cnnbp(net, y)
         if strcmp(net.layers{l}.type, 'c')
             for j = 1 : numel(net.layers{l}.a)
                 for i = 1 : numel(net.layers{l - 1}.a)
-                    net.layers{l}.dk{i}{j} = custom_convn(flipall(net.layers{l - 1}.a{i}), net.layers{l}.d{j}, 'fft') / size(net.layers{l}.d{j}, 3);
+                    net.layers{l}.dk{i}{j} = convn_valid(flipall(net.layers{l - 1}.a{i}), net.layers{l}.d{j}) / size(net.layers{l}.d{j}, 3);
                 end
                 net.layers{l}.db{j} = sum(net.layers{l}.d{j}(:)) / size(net.layers{l}.d{j}, 3);
             end
-        end
+         end
     end
     net.dffW = net.od * (net.fv)' / size(net.od, 2);
     net.dffb = mean(net.od, 2);

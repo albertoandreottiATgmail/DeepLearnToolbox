@@ -20,10 +20,9 @@ function net = cnnff(net, x)
             inputmaps = net.layers{l}.outputmaps;
         elseif strcmp(net.layers{l}.type, 's')
             %  downsample
-            for j = 1 : inputmaps
-			    xscale = net.layers{l}.xscale;
-				yscale = net.layers{l}.yscale;
-				%xscale = yscale = xscale = net.layers{l}.scale;
+	     for j = 1 : inputmaps
+                xscale = net.layers{l}.xscale;
+                yscale = net.layers{l}.yscale;
                 z = convn(net.layers{l - 1}.a{j}, ones(xscale, yscale) / (xscale*yscale), 'valid');   %  !! replace with variable
                 net.layers{l}.a{j} = z(1 : xscale : end, 1 : yscale : end, :);
             end
@@ -36,7 +35,12 @@ function net = cnnff(net, x)
         sa = size(net.layers{n}.a{j});
         net.fv = [net.fv; reshape(net.layers{n}.a{j}, sa(1) * sa(2), sa(3))];
     end
+
     %  feedforward into output perceptrons
-    net.o = sigm(net.ffW * net.fv + repmat(net.ffb, 1, size(net.fv, 2)));
+    inPut = net.ffW * net.fv + repmat(net.ffb, 1, size(net.fv, 2))
+    for i=1:size(inPut, 2)
+        net.o(:, i) = (e.^inPut(:, i))/sum(e.^inPut(:, i));
+    end
+    
 
 end
