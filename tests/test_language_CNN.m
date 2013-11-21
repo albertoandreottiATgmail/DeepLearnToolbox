@@ -23,11 +23,11 @@ usable = floor(0.75*usable);
 
 %Clean memory often while preparing the dataset
 for i=1:size(files,1)
-       load(files(i, :));
+    load(files(i, :));
 	label = zeros(3, 1); label(i, 1)=1;
 	if !exist('train_x')
 	    train_x = reshape(mfccs(:, 1:(usable*winsize)), mfccnum, winsize, []);
-           train_y = zeros(3, usable) + label;
+        train_y = zeros(3, usable) + label;
 	    clear mfccs
 	else
 	    reshaped = reshape(mfccs(:, 1:usable*winsize), mfccnum, winsize, []);
